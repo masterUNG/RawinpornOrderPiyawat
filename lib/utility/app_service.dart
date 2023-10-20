@@ -26,7 +26,10 @@ class AppService {
       codeSent: (verificationId, forceResendingToken) {
         print('############ VerID ===> $verificationId');
 
-        Get.offAll(CheckOtp(verId: verificationId));
+        Get.offAll(CheckOtp(
+          verId: verificationId,
+          phoneNumber: phoneNumber,
+        ));
       },
       codeAutoRetrievalTimeout: (verificationId) {},
     );
@@ -35,17 +38,22 @@ class AppService {
   Future<void> processCheckOtp(
       {required String verifyId,
       required String otp,
+      required String phoneNumber,
       required BuildContext context}) async {
     FirebaseAuth.instance
         .signInWithCredential(PhoneAuthProvider.credential(
             verificationId: verifyId, smsCode: otp))
         .then((value) {
 
+      AppSnackBar(
+              title: 'OTP Ture', subTitle: 'Welcome To App', context: context)
+          .normalSnackBar();
           
-        })
-        .catchError((onError) {
-          print('onError ----------- $onError');
-      AppSnackBar(title: onError, subTitle: onError.message, context: context).errorSnackBar();
+    }).catchError((onError) {
+      print('onError ----------- $onError');
+      AppSnackBar(
+              title: onError.code, subTitle: onError.message, context: context)
+          .errorSnackBar();
     });
   }
 }
